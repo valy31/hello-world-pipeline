@@ -8,28 +8,35 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Building the application'
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                script {
-                    echo 'Building Docker image'
                     sh 'docker build -t hello-world-app .'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Run Docker Container') {
             steps {
                 script {
-                    echo 'Running Docker container'
-                    sh 'docker run -d -p 8080:8080 hello-world-app'
+                    sh 'docker run -d -p 5000:5000 hello-world-app'
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                script {
+                    sh 'curl http://localhost:5000'
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    sh 'docker stop $(docker ps -q --filter "ancestor=hello-world-app")'
+                    sh 'docker rm $(docker ps -a -q --filter "ancestor=hello-world-app")'
                 }
             }
         }
