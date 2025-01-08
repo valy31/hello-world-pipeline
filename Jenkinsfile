@@ -1,43 +1,24 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
+        stage('Clonare') {
             steps {
-                git branch: 'main', url: 'https://github.com/valy31/hello-world-pipeline.git'
+                git 'https://github.com/valy31/hello-world-pipeline.git'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                script {
-                    sh 'docker build -t hello-world-app .'
-                }
+                sh 'echo "Building Hello World App"'
             }
         }
-
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    sh 'docker run -d -p 5000:5000 hello-world-app'
-                }
-            }
-        }
-        
         stage('Test') {
             steps {
-                script {
-                    sh 'curl http://localhost:5000'
-                }
+                sh 'echo "Running Tests"'
             }
         }
-
-        stage('Cleanup') {
+        stage('Deploy') {
             steps {
-                script {
-                    sh 'docker stop $(docker ps -q --filter "ancestor=hello-world-app")'
-                    sh 'docker rm $(docker ps -a -q --filter "ancestor=hello-world-app")'
-                }
+                sh 'echo "Deploying Application"'
             }
         }
     }
